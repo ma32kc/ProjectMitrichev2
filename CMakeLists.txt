@@ -1,39 +1,32 @@
 cmake_minimum_required(VERSION 3.5)
 
-# Название проекта
+# Set the project name
 project(ExpoFinder)
 
-
-find_package(OpenMP REQUIRED)
-if(OpenMP_CXX_FOUND)
-    message(STATUS "Found OpenMP")
-    add_definitions(-DOPENMP_SUPPORT)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-endif()
-
-# Указываем стандарт C++
+# Specify C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
-# Указываем файлы исходного кода
-set(SOURCES
-    main.cpp
-    DataController.cpp
-)
+# Find the OpenMP package
+find_package(OpenMP REQUIRED)
 
-# Указываем заголовочные файлы для IDE (не обязательно для сборки)
-set(HEADERS
-    DataController.h
-)
+# Create the executable target first
+add_executable(ExpoFinder main.cpp DataController.cpp)
 
-# Подключаем фреймворк Drogon
+# Apply OpenMP settings if OpenMP is found
+if(OpenMP_CXX_FOUND)
+    target_compile_options(ExpoFinder PRIVATE ${OpenMP_CXX_FLAGS})
+    target_link_libraries(ExpoFinder PRIVATE ${OpenMP_CXX_LIBRARIES})
+    message(STATUS "Found OpenMP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    add_definitions(-DOPENMP_SUPPORT)
+endif()
+
+# Find Drogon framework
 find_package(Drogon CONFIG REQUIRED)
 
-# Создаем исполняемый файл из исходных файлов
-add_executable(ExpoFinder ${SOURCES} ${HEADERS})
-
-# Линкуем фреймворк Drogon к исполняемому файлу
+# Link Drogon library to the executable
 target_link_libraries(ExpoFinder PRIVATE Drogon::Drogon)
 
-if(OpenMP_CXX_FOUND)
-    target_link_libraries(ExpoFinder PUBLIC OpenMP::OpenMP_CXX)
-endif()
+# Make sure to link OpenMP after defining the target
+target_link_libraries(ExpoFinder PRIVATE OpenMP::OpenMP_CXX)
+
