@@ -28,11 +28,11 @@ double DataController::findExponent(const std::vector<double>& values, int num_t
     	double sum_i_squared = 0.0;
     	omp_set_num_threads(num_threads);
 	
-	 #pragma omp parallel
+	/* #pragma omp parallel
     	{
         	#pragma omp single
         	std::cout << "Actual threads used: " << omp_get_num_threads() << std::endl;
-    	}
+    	}*/
 
 	#pragma omp parallel for reduction(+:sum_i_log_y, sum_i_squared)
 	for (int i = 1; i <= values.size(); ++i) {
@@ -57,7 +57,7 @@ void DataController::generateAndProcessData(const drogon::HttpRequestPtr& req,
 
     	std::stringstream result;
    	result << "Calc results:\n";
-	result << "Max OpenMP threads available: " << omp_get_max_threads()<< '\n';
+	//result << "Max OpenMP threads available: " << omp_get_max_threads()<< '\n';
     	for (int num_threads = 1; num_threads <= 4; ++num_threads) {
         	double calculatedExponent = findExponent(values, num_threads);
         	result << "Threads: " << num_threads << ", Calculated Exponent: " << calculatedExponent << "\n";
