@@ -1,14 +1,14 @@
 #include "DataController.h"
 
 void DataController::generateDataFile(const std::string& filename, int dataSize, double exponent){
-   	std::ofstream file(filename);
+   	std::ofstream file(filename, std::ios::out | std::ios::trunc);
     	if (!file.is_open()) {
-        	throw std::runtime_error("Не удалось открыть файл для записи данных.");
+        	throw std::runtime_error("Unable to open file");
     	}
     	std::srand(static_cast<unsigned>(std::time(0)));
 
     	for (int i = 1; i <= dataSize; ++i) {
-        	double noise = static_cast<double>(std::rand() % 10000 - 5000) / 500.0;
+        	double noise = static_cast<double>(std::rand() % 5000) / 500.0;
         	double value = i * std::exp(exponent) + noise;
         	file << value << '\n';
     	}
@@ -27,6 +27,12 @@ double DataController::findExponent(const std::vector<double>& values, int num_t
     	double sum_i_log_y = 0.0;
     	double sum_i_squared = 0.0;
     	omp_set_num_threads(num_threads);
+	
+	 #pragma omp parallel
+    	{
+        	#pragma omp single
+        	std::cout << "Actual threads used: " << omp_get_num_threads() << std::endl;
+    	}
 
 	#pragma omp parallel for reduction(+:sum_i_log_y, sum_i_squared)
 	for (int i = 1; i <= values.size(); ++i) {
@@ -51,7 +57,8 @@ void DataController::generateAndProcessData(const drogon::HttpRequestPtr& req,
 
     	std::stringstream result;
    	result << "Calc results:\n";
-    	for (int num_threads = 1; num_threads <= omp_get_max_threads(); ++num_threads) {
+	result << "Max OpenMP threads available: " << omp_get_max_threads()<< '\n';
+    	for (int num_threads = 1; num_threads <= 4; ++num_threads) {
         	double calculatedExponent = findExponent(values, num_threads);
         	result << "Threads: " << num_threads << ", Calculated Exponent: " << calculatedExponent << "\n";
     	}
