@@ -1,6 +1,6 @@
 #include "DataController.h"
 
-void DataController:generateDataFile(const std::string filename&, int dataSize, double expo){
+void DataController::generateDataFile(const std::string& filename, int dataSize, double exponent){
    	std::ofstream file(filename);
     	if (!file.is_open()) {
         	throw std::runtime_error("Не удалось открыть файл для записи данных.");
@@ -28,6 +28,7 @@ double DataController::findExponent(const std::vector<double>& values, int num_t
     	double sum_i_squared = 0.0;
     	omp_set_num_threads(num_threads);
 
+	#pragma omp parallel for reduction(+:sum_i_log_y, sum_i_squared)
 	for (int i = 1; i <= values.size(); ++i) {
 		double y = values[i - 1];
 		sum_i_log_y += i * log(y);
@@ -44,7 +45,7 @@ void DataController::generateAndProcessData(const drogon::HttpRequestPtr& req,
 	const int dataSize = 100000;
     	const double exponent = 0.05; 
 	std::vector<double> values;
-    	generateDataFile(filename, dataSize, exponent);	
+    	generateDataFile(fileName, dataSize, exponent);	
 
 	readFile(fileName, values);
 
