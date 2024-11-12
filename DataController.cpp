@@ -59,8 +59,11 @@ void DataController::generateAndProcessData(const drogon::HttpRequestPtr& req,
    	result << "Calc results:\n";
 	//result << "Max OpenMP threads available: " << omp_get_max_threads()<< '\n';
     	for (int num_threads = 1; num_threads <= 4; ++num_threads) {
-        	double calculatedExponent = findExponent(values, num_threads);
-        	result << "Threads: " << num_threads << ", Calculated Exponent: " << calculatedExponent << "\n";
+        	auto start_time = std::chrono::high_resolution_clock::now();
+		double calculatedExponent = findExponent(values, num_threads);
+		auto end_time = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> duration = end_time - start_time;
+        	result << "Threads: " << num_threads << ", Calculated Exponent: " << calculatedExponent << "; It took: "<< duration.count() << " seconds\n";
     	}
 
 	auto resp = drogon::HttpResponse::newHttpResponse();
