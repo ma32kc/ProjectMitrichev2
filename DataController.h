@@ -7,6 +7,7 @@
 #include <vector>
 #include <omp.h>
 #include <chrono>
+#include <json/json.h>
 
 class DataController : public drogon::HttpController<DataController> {
 public:

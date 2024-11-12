@@ -55,18 +55,27 @@ void DataController::generateAndProcessData(const drogon::HttpRequestPtr& req,
 
 	readFile(fileName, values);
 
-    	std::stringstream result;
-   	result << "Calc results:\n";
+    	/*std::stringstream result;
+   	result << "Calc results:\n";*/
 	//result << "Max OpenMP threads available: " << omp_get_max_threads()<< '\n';
+	Json::Value resultArray(Json::arrayValue);
     	for (int num_threads = 1; num_threads <= 4; ++num_threads) {
         	auto start_time = std::chrono::high_resolution_clock::now();
 		double calculatedExponent = findExponent(values, num_threads);
 		auto end_time = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> duration = end_time - start_time;
-        	result << "Threads: " << num_threads << ", Calculated Exponent: " << calculatedExponent << "; It took: "<< duration.count() << " seconds\n";
-    	}
+        	//result << "Threads: " << num_threads << ", Calculated Exponent: " << calculatedExponent << "; It took: "<< duration.count() << " seconds\n";
+		
+        	Json::Value resultObject;
+        	resultObject["exponent"] = calculatedExponent;         
+        	resultObject["threads"] = num_threads;                   
+		resultObject["duration"] = duration.count();             
 
-	auto resp = drogon::HttpResponse::newHttpResponse();
-    	resp->setBody(result.str());
+        	resultArray.append(resultObject);
+	}
+
+	/*auto resp = drogon::HttpResponse::newHttpResponse();
+    	resp->setBody(result.str());*/
+    	auto resp = drogon::HttpResponse::newHttpJsonResponse(resultArray);
     	callback(resp);
 }
