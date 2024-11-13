@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [ devTest ]
   workflow_dispatch:
-    inputs:
-        parameter:
-          description: My Parameter
-  
 
 jobs:
   build:
