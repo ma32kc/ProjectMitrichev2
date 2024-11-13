@@ -17,7 +17,7 @@ public:
 
 	void generateAndProcessData(const drogon::HttpRequestPtr& req,
                                 std::function<void(const drogon::HttpResponsePtr&)>&& callback);
-
+	void generateAndProcessData(const std::string& fileName, const int size, const double exponent);
 private:
 	void generateDataFile(const std::string& filename, int dataSize, double exponent);
 	void readFile(const std::string& filename, std::vector<double>& values);
