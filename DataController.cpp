@@ -79,3 +79,21 @@ void DataController::generateAndProcessData(const drogon::HttpRequestPtr& req,
     	auto resp = drogon::HttpResponse::newHttpJsonResponse(resultArray);
     	callback(resp);
 }
+
+
+void DataController::generateAndProcessData(const std::string& fileName, const int dataSize, const double exponent) {
+
+	std::vector<double> values;
+    	generateDataFile(fileName, dataSize, exponent);	
+
+	readFile(fileName, values);
+
+    	for (int num_threads = 1; num_threads <= 4; ++num_threads) {
+        	auto start_time = std::chrono::high_resolution_clock::now();
+		double calculatedExponent = findExponent(values, num_threads);
+		auto end_time = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> duration = end_time - start_time;
+		std::cout << "Threads: " << num_threads << ", Calculated Exponent: " << calculatedExponent << "; It took: "<< duration.count() << " seconds\n";
+		
+	}
+}
