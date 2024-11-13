@@ -32,9 +32,6 @@ target_link_libraries(ExpoFinder PRIVATE Drogon::Drogon)
 # Make sure to link OpenMP after defining the target
 target_link_libraries(ExpoFinder PRIVATE OpenMP::OpenMP_CXX)
 
-# Add Google Test for unit tests
-find_package(GTest REQUIRED)
-
 # Enable testing
 enable_testing()
 
@@ -42,10 +39,7 @@ enable_testing()
 add_executable(ExpoFinderTests DataControllerTest.cpp MainTest.cpp DataController.cpp)
 
 # Link GTest, Drogon, and OpenMP libraries to the test executable
-target_link_libraries(ExpoFinderTests PRIVATE GTest::GTest GTest::Main Drogon::Drogon OpenMP::OpenMP_CXX)
-
-# Add tests to CTest
-add_test(NAME DataControllerTests COMMAND ExpoFinderTests)
+target_link_libraries(ExpoFinderTests PRIVATE Drogon::Drogon OpenMP::OpenMP_CXX)
 
 enable_testing()
 add_test(NAME ExpoFinderTests COMMAND ExpoFinderTests)
