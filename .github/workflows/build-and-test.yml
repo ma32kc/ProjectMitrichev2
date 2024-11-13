@@ -1,47 +1,46 @@
-name: Build and Test
+name: Docker Build and Run
 
 on:
   push:
-    branches: [ devTest ]
+    branches: [ main ]
   pull_request:
-    branches: [ devTest ]
-  workflow_dispatch:
+    branches: [ main ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      # Шаг 1: Проверка репозитория
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # Скачиваем код
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      # Шаг 2: Установка CMake
-      - name: Install CMake
-        uses: jwlawson/actions-setup-cmake@v1
+      # Сборка Docker-образа
+      - name: Build Docker Image
+        run: docker build -t myapp:latest .
 
-      # Шаг 3: Установка библиотек и зависимостей
-      - name: Install dependencies
+      # Запуск Docker-контейнера
+      - name: Run Docker Container
+        run: docker run -d -p 8848:8848 --name myapp myapp:latest
+
+      # Проверка, что сервис запущен
+      - name: Wait for service to start
         run: |
-          sudo apt update
-          sudo apt install -y libdrogon-dev libgtest-dev cmake build-essential
+          for i in {1..10}; do
+            if curl -s http://localhost:8848; then
+              echo "Service is up!"
+              exit 0
+            fi
+            echo "Waiting for service..."
+            sleep 5
+          done
+          echo "Service did not start in time" && exit 1
 
-      # Шаг 4: Сборка GTest
-      - name: Build GTest
-        run: |
-          cd /usr/src/gtest
-          sudo cmake .
-          sudo make
-          sudo cp *.a /usr/lib
-
-      # Шаг 5: Сборка проекта с CMake
-      - name: Configure and Build
-        run: |
-          cmake -S . -B build
-          cmake --build build
-
-      # Шаг 6: Запуск тестов
+      # Запуск тестов
       - name: Run tests
-        run: |
-          cd build
-          ctest --output-on-failure
+        run: docker exec myapp /bin/bash -c "cd ./build && ctest"
+
+      # Остановка и удаление контейнера после теста
+      - name: Stop and remove Docker Container
+        if: always()
+        run: docker rm -f myapp
