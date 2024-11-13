@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(OpenMP REQUIRED)
 
 # Create the executable target first
-add_executable(ExpoFinder main.cpp DataController.cpp)
+add_executable(ExpoFinder main.cpp DataController.cpp test.cpp)
 
 set(HEADERS FrontendController.h)
 
@@ -46,3 +46,6 @@ target_link_libraries(ExpoFinderTests PRIVATE GTest::GTest GTest::Main Drogon::D
 
 # Add tests to CTest
 add_test(NAME DataControllerTests COMMAND ExpoFinderTests)
+
+enable_testing()
+add_test(NAME ExpoFinderTests COMMAND ExpoFinderTests)
