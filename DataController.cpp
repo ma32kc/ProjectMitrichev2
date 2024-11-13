@@ -81,7 +81,7 @@ void DataController::generateAndProcessData(const drogon::HttpRequestPtr& req,
 }
 
 
-void DataController::generateAndProcessData(const std::string& fileName, const int dataSize, const double exponent) {
+void DataController::testData(const std::string& fileName, const int dataSize, const double exponent) {
 
 	std::vector<double> values;
     	generateDataFile(fileName, dataSize, exponent);	
