@@ -15,7 +15,7 @@ void testGenerateAndProcessData(const std::string& fileName, int dataSize, doubl
         DataController controller;
 
         // Call the function to be tested
-        controller.generateAndProcessData(fileName, dataSize, exponent);
+        controller.testData(fileName, dataSize, exponent);
 
         // Print a success message if no exceptions were thrown
         std::cout << "Test passed: generateAndProcessData completed successfully.\n" << std::endl;
