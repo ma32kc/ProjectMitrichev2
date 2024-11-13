@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thread Performance Comparison</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Thread Performance Comparison</h1>
+    
+    <!-- Button to fetch data -->
+    <button id="fetchDataButton">Fetch Data</button>
+    
+    <!-- Display the 'x' value -->
+    <p><strong>x:</strong> <span id="xValue">Loading...</span></p>
+    
+    <!-- Canvas for Chart.js -->
+    <canvas id="comparisonChart" width="400" height="200"></canvas>
+
+    <script>
+        // Mock data for testing
+        const mockData = {
+            x: 11341,
+            oneThread: {
+                x: [1, 3, 5, 6],
+                y: [1, 6, 8, 22]
+            },
+            manyThreads: {
+                x: [1, 3, 5, 6],
+                y: [2, 9, 15, 30]
+            }
+        };
+
+        // Function to fetch data and update chart
+        async function fetchData() {
+            let res = await fetch('http://localhost:8848/');
+            let dat = await response.json();
+            console.log(dat);
+            
+            // Mocking fetch - normally you would use `await fetch('your-endpoint-url')`
+            const data = mockData;
+
+            // Update x value on screen
+            document.getElementById('xValue').textContent = data.x;
+
+            // Plot data on Chart.js
+            plotChart(data);
+        }
+
+        // Function to plot data on Chart.js
+        function plotChart(data) {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.oneThread.x, // Assuming x-axis values are the same for both series
+                    datasets: [
+                        {
+                            label: 'One Thread',
+                            data: data.oneThread.y,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            fill: false,
+                        },
+                        {
+                            label: 'Many Threads',
+                            data: data.manyThreads.y,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            fill: false,
+                        },
+                        {
+                            label: 'Linear Acceleration',
+                            data: data.oneThread.x, // Mock linear acceleration data for comparison
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderDash: [5, 5],
+                            fill: false,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Workload'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Acceleration'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Attach event listener to button
+        document.getElementById('fetchDataButton').addEventListener('click', fetchData);
+    </script>
+</body>
+</html>
