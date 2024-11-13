@@ -12,6 +12,8 @@ find_package(OpenMP REQUIRED)
 # Create the executable target first
 add_executable(ExpoFinder main.cpp DataController.cpp)
 
+set(HEADERS FrontendController.h)
+
 # Apply OpenMP settings if OpenMP is found
 if(OpenMP_CXX_FOUND)
     target_compile_options(ExpoFinder PRIVATE ${OpenMP_CXX_FLAGS})

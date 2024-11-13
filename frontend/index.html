@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thread Performance Comparison</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Thread Performance Comparison</h1>
+    
+    <!-- Button to fetch data -->
+    <button id="fetchDataButton">Fetch Data</button>
+    
+    <!-- Display the 'x' value -->
+    <p><strong>x:</strong> <span id="xValue">Loading...</span></p>
+    
+    <!-- Canvas for Chart.js -->
+    <canvas id="comparisonChart" width="400" height="200"></canvas>
+
+    <script>
+        // Mock data for testing
+        const mockData = {
+            x: 11341,
+            oneThread: {
+                x: [1, 3, 5, 6],
+                y: [1, 6, 8, 22]
+            },
+            manyThreads: {
+                x: [1, 3, 5, 6],
+                y: [2, 9, 15, 30]
+            }
+        };
+
+        // Function to fetch data and update chart
+        async function fetchData() {
+            let res = await fetch('http://localhost:8848/processData');
+            let data = await res.json();
+            console.log(data);
+            
+            xS = []
+            yS = []
+            data.forEach(element => {
+                xS.push(element.threads)
+                yS.push(element.duration)
+            });
+
+            // Update x value on screen
+            // document.getElementById('xValue').textContent = data.x;
+
+            // Plot data on Chart.js
+            plotChart(xS, yS);
+        }
+
+        // Function to plot data on Chart.js
+        function plotChart(xS, yS) {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+
+            // Check if there's an existing chart instance for this canvas
+            if (Chart.getChart(ctx)) {
+            Chart.getChart(ctx).destroy(); // Destroy existing chart instance
+            }
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xS, // Assuming x-axis values are the same for both series
+                    datasets: [
+                        {
+                            label: 'Потоки',
+                            data: yS,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            fill: false,
+                        },
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Кол-во потоков'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Время'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Attach event listener to button
+        document.getElementById('fetchDataButton').addEventListener('click', fetchData);
+    </script>
+</body>
+</html>
