@@ -14,7 +14,7 @@ WORKDIR /app
 COPY . .
 
 # Собираем проект с помощью CMake
-RUN mkdir build && cd build && cmake .. && make
+RUN mkdir -p build && cd build && cmake .. && make
 
 EXPOSE 8848
 
