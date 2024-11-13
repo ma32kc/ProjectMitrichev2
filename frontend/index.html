@@ -34,48 +34,44 @@
 
         // Function to fetch data and update chart
         async function fetchData() {
-            let res = await fetch('http://localhost:8848/');
-            let dat = await response.json();
-            console.log(dat);
+            let res = await fetch('http://localhost:8848/processData');
+            let data = await res.json();
+            console.log(data);
             
-            // Mocking fetch - normally you would use `await fetch('your-endpoint-url')`
-            const data = mockData;
+            xS = []
+            yS = []
+            data.forEach(element => {
+                xS.push(element.threads)
+                yS.push(element.duration)
+            });
 
             // Update x value on screen
-            document.getElementById('xValue').textContent = data.x;
+            // document.getElementById('xValue').textContent = data.x;
 
             // Plot data on Chart.js
-            plotChart(data);
+            plotChart(xS, yS);
         }
 
         // Function to plot data on Chart.js
-        function plotChart(data) {
+        function plotChart(xS, yS) {
             const ctx = document.getElementById('comparisonChart').getContext('2d');
 
+            // Check if there's an existing chart instance for this canvas
+            if (Chart.getChart(ctx)) {
+            Chart.getChart(ctx).destroy(); // Destroy existing chart instance
+            }
+            
             new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: data.oneThread.x, // Assuming x-axis values are the same for both series
+                    labels: xS, // Assuming x-axis values are the same for both series
                     datasets: [
                         {
-                            label: 'One Thread',
-                            data: data.oneThread.y,
+                            label: 'Потоки',
+                            data: yS,
                             borderColor: 'rgba(75, 192, 192, 1)',
                             fill: false,
                         },
-                        {
-                            label: 'Many Threads',
-                            data: data.manyThreads.y,
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            fill: false,
-                        },
-                        {
-                            label: 'Linear Acceleration',
-                            data: data.oneThread.x, // Mock linear acceleration data for comparison
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderDash: [5, 5],
-                            fill: false,
-                        }
                     ]
                 },
                 options: {
@@ -84,13 +80,13 @@
                         x: {
                             title: {
                                 display: true,
-                                text: 'Workload'
+                                text: 'Кол-во потоков'
                             }
                         },
                         y: {
                             title: {
                                 display: true,
-                                text: 'Acceleration'
+                                text: 'Время'
                             },
                             beginAtZero: true
                         }
