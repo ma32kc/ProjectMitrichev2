@@ -37,11 +37,11 @@ double DataController::findExponent(const std::vector<double>& values, int num_t
 	#pragma omp parallel for reduction(+:sum_i_log_y, sum_i_squared)
 	for (int i = 1; i <= values.size(); ++i) {
 		double y = values[i - 1];
-		sum_i_log_y += i * log(y);
-        	sum_i_squared += i * i;
+		sum_i_log_y += y;
+        sum_i_squared += i-1;
 	}
 
-	return sum_i_log_y / sum_i_squared;	
+	return log(sum_i_log_y / sum_i_squared);
 }
 
 void DataController::generateAndProcessData(const drogon::HttpRequestPtr& req,
